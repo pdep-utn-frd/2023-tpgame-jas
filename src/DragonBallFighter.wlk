@@ -19,6 +19,7 @@ object pantalla{
 	
 	method visualesEnPantalla(){
 		game.addVisual(goku)
+		game.addVisual(vegeta)
 	}
 	
 	method programarTeclas(){
@@ -34,6 +35,7 @@ object pantalla{
 // Personajes
 
 object goku{
+	var enemigo = vegeta
 	
 	var property image = "Goku_estatico.png"
 	var property vida = 5
@@ -58,7 +60,43 @@ object goku{
 	method golpear(){
 		game.schedule(0,{self.image("dasdas.png")})
 		game.schedule(300,{self.image("Goku_estatico.png")})
+		if (self.position() == enemigo.position()){
+			enemigo.perderVida()
+		}
 	}
+}
+
+object vegeta{
+	var enemigo = goku
+	
+	var property image = "Goku_estatico.png"
+	var property vida = 5
+	var property position = game.at(4,0)
+	
+	method desplazarse(orientacion){
+		orientacion.moverse(self)
+	}
+	
+	/*method saltar(){
+		if(position.y() == 0){
+			arriba.moverse(self)
+			game.schedule(400,{abajo.moverse(self)})
+		}
+	}*/
+	
+	method perderVida(){
+		self.vida(self.vida() - 1)
+		game.say(self, "tengo " + vida + " de vida")
+	}
+	
+	method golpear(){
+		game.schedule(0,{self.image("dasdas.png")})
+		game.schedule(300,{self.image("Goku_estatico.png")})
+		if ((self.position().x())+1 == enemigo.position()){
+			enemigo.perderVida()
+		}
+	}
+	
 }
 
 //Movimiento
