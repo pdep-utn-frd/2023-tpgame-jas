@@ -23,16 +23,17 @@ object pantalla{
 	method visualesEnPantalla(){
 		game.addVisual(goku)
 		game.addVisual(vegeta)
-		game.addVisual(hud)
+		game.addVisual(hud1)
+		game.addVisual(hud2)
 	}
 	
 	method programarTeclas(){
-		keyboard.d().onPressDo{goku.desplazarse(derecha)}
-		keyboard.a().onPressDo{goku.desplazarse(izquierda)}
-		keyboard.w().onPressDo{goku.saltar()}
-		keyboard.s().onPressDo{goku.perderVida()}
-		keyboard.f().onPressDo{goku.golpear()}
-	}
+        keyboard.d().onPressDo{goku.mover(der)}
+        keyboard.a().onPressDo{goku.mover(izq)}
+        keyboard.w().onPressDo{goku.mover(arriba)}
+        keyboard.s().onPressDo{goku.perderVida()}
+        keyboard.f().onPressDo{goku.golpear()}
+    }
 	
 }
 
@@ -46,9 +47,17 @@ object finalizarPartida{
 	}
 }
 
-object hud {
-    var property image = "barraDeVida/10vida.png"
-    method position() = game.at(2,11)
+object hud1 {
+    var property image = "barraDeVida/HUD2.png"
+    method position() = game.at(1,10)
+   // method actualizar (vida) {
+     //   image = "img/HUD/HUD1-" + vida.min(50) + ".png"
+   // }
+}
+
+object hud2 {
+    var property image = "barraDeVida/HUD2_I.png"
+    method position() = game.at(12,10)
    // method actualizar (vida) {
      //   image = "img/HUD/HUD1-" + vida.min(50) + ".png"
    // }
@@ -63,10 +72,10 @@ object goku{
 	var property image = "Goku_estatico_"+self.direccion()+".png"
 	var property vida = 5
 	var property position = game.at(1,0)
-	
+/* 
 	method desplazarse(orientacion){
 		orientacion.moverse(self)
-	}
+	}*/
 /* 	
 	method cambioOrienation(){
 		if(self.position().x() > enemigo.position().x()){
@@ -76,13 +85,31 @@ object goku{
 		}
 	}*/
 	
+	method mover(direc){
+        if (direc.x() != 0){
+            direccion = direc.texto()
+            self.position(self.position().right(direc.x()))
+            self.image("Goku_estatico_"+direc.texto()+".png")
+            self.direccion(direc.texto())
+        }
+
+        if (direc.y() > 0){
+            if(position.y() >= 0 && position.y()<=2){
+                self.position(self.position().up(direc.y()))
+                game.schedule(0,{self.image("Goku_" +direc.texto()+ self.direccion() + ".png")})
+                game.schedule(400,{self.position(self.position().down(2))})
+                game.schedule(400,{self.image("Goku_estatico_" + self.direccion() + ".png")})
+            }
+        }
+       }
+/* 
 	method saltar(){
 		if(position.y() >= 0 && position.y()<=2){
 			arriba.moverse(self)
 			game.schedule(400,{abajo.moverse(self)})
 		}
 	}
-	
+*/	
 	method perderVida(){
 		self.vida(self.vida() - 1)
 		game.say(self, "tengo " + vida + " de vida")
@@ -112,6 +139,24 @@ object vegeta{
 		orientacion.moverse(self)
 	}
 	
+	method mover(direc){
+        if (direc.x() != 0){
+            direccion = direc.texto()
+            self.position(self.position().right(direc.x()))
+            self.image("Gokuestatico"+direc.texto()+".png")
+            self.direccion(direc.texto())
+        }
+
+        if (direc.y() > 0){
+            if(position.y() >= 0 && position.y()<=2){
+                self.position(self.position().up(direc.y()))
+                game.schedule(0,{self.image("Goku_" +direc.texto()+ self.direccion() + ".png")})
+                game.schedule(400,{self.position(self.position().down(2))})
+                game.schedule(400,{self.image("Gokuestatico" + self.direccion() + ".png")})
+            }
+        }
+       }
+	
 	/*method saltar(){
 		if(position.y() == 0){
 			arriba.moverse(self)
@@ -136,7 +181,7 @@ object vegeta{
 	}
 	
 }
-
+/* 
 //Movimiento
 
 object derecha{
@@ -175,6 +220,16 @@ object abajo{
 		game.schedule(0,{personaje.image(arriba.direccion())})
 	}
 }
+*/
 
+class Movimiento {
+    const property x
+    const property y
+    const property texto
+}
+
+const arriba = new Movimiento (x = 0, y = 2, texto = "salto_")
+const der = new Movimiento (x = 1, y = 0, texto = "D")
+const izq = new Movimiento (x = -1, y = 0, texto = "I")
 
 // Objetos
