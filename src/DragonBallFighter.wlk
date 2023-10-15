@@ -22,9 +22,11 @@ object pantalla{
 	}
 	
 	method programarTeclas(){
-		keyboard.d().onPressDo{goku.derecha()}
-		keyboard.a().onPressDo{goku.izquierda()}
+		keyboard.d().onPressDo{goku.desplazarse(derecha)}
+		keyboard.a().onPressDo{goku.desplazarse(izquierda)}
 		keyboard.w().onPressDo{goku.saltar()}
+		keyboard.s().onPressDo{goku.perderVida()}
+		keyboard.f().onPressDo{goku.golpear()}
 	}
 	
 }
@@ -41,41 +43,51 @@ object goku{
 		orientacion.moverse(self)
 	}
 	
-	method derecha(){
-		position = position.right(1)
-	}
-	
-	method izquierda(){
-		position = position.left(1)
-	}
-	
-	method subir(){
-		position = position.up(2)
-		game.schedule(0,{image = "Goku_salto2.png"})
-	}
-	
-	method bajar(){
-		position = position.down(2)
-		game.schedule(0,{image = "Goku_estatico.png"})
-	}
-	
 	method saltar(){
 		if(position.y() == 0){
-			self.subir()
-			game.schedule(400,{self.bajar()})
+			arriba.moverse(self)
+			game.schedule(400,{abajo.moverse(self)})
 		}
 	}
 	
-}
-
-/* Movimiento
-
-object derecha{
+	method perderVida(){
+		self.vida(self.vida() - 1)
+		game.say(self, "tengo " + vida + " de vida")
+	}
 	
-	method moverse(personaje){
-		personaje.position().right(1)
+	method golpear(){
+		game.schedule(0,{self.image("dasdas.png")})
+		game.schedule(300,{self.image("Goku_estatico.png")})
 	}
 }
-*/ 
+
+//Movimiento
+
+object derecha{
+	method moverse(personaje){
+		personaje.position(personaje.position().right(1))
+	}
+}
+
+object izquierda{
+	method moverse(personaje){
+		personaje.position(personaje.position().left(1))
+	}
+}
+
+object arriba{
+	method moverse(personaje){
+		personaje.position(personaje.position().up(3))
+		game.schedule(0,{personaje.image("Goku_salto2.png")})
+	}
+}
+
+object abajo{
+	method moverse(personaje){
+		personaje.position(personaje.position().down(3))
+		game.schedule(0,{personaje.image("Goku_estatico.png")})
+	}
+}
+
 
 // Objetos
