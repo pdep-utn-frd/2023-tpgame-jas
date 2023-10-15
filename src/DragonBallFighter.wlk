@@ -44,6 +44,14 @@ object goku{
 	method desplazarse(orientacion){
 		orientacion.moverse(self)
 	}
+/* 	
+	method cambioOrienation(){
+		if(self.position().x() > enemigo.position().x()){
+			self.image("Goku_estatico_izq.png")
+		} else{
+			self.image("Goku_estatico.png")
+		}
+	}*/
 	
 	method saltar(){
 		if(position.y() == 0){
@@ -58,12 +66,12 @@ object goku{
 	}
 	
 	method golpear(){
-		game.schedule(0,{self.image("dasdas.png")})
-		game.schedule(300,{self.image("Goku_estatico.png")})
-		if (self.position() == enemigo.position()){
-			enemigo.perderVida()
-		}
-	}
+        game.schedule(0,{self.image("dasdas.png")})
+        game.schedule(300,{self.image("Goku_estatico.png")})
+        if (((self.position().x())-enemigo.position().x())>=-1 && ((self.position().x())-enemigo.position().x())<=1 ){
+            enemigo.perderVida()
+        }
+    }
 }
 
 object vegeta{
@@ -103,12 +111,14 @@ object vegeta{
 
 object derecha{
 	method moverse(personaje){
+		personaje.image("Goku_estatico.png")
 		personaje.position(personaje.position().right(1))
 	}
 }
 
 object izquierda{
 	method moverse(personaje){
+		personaje.direccion("izq")
 		personaje.position(personaje.position().left(1))
 	}
 }
