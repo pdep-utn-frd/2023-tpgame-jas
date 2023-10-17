@@ -31,8 +31,10 @@ object pantalla{
         keyboard.d().onPressDo{goku.mover(der)}
         keyboard.a().onPressDo{goku.mover(izq)}
         keyboard.w().onPressDo{goku.mover(arriba)}
-        keyboard.s().onPressDo{goku.perderVida()}
         keyboard.f().onPressDo{goku.golpear()}
+        keyboard.right().onPressDo{vegeta.mover(der)}
+        keyboard.left().onPressDo{vegeta.mover(izq)}
+        keyboard.up().onPressDo{vegeta.mover(arriba)}
     }
 	
 }
@@ -118,10 +120,18 @@ object goku{
 		}
 	}
 	
+	method verificarRango(lI,lS){
+		return(self.position().x()-enemigo.position().x()>=lI && self.position().x()-enemigo.position().x()<=lS)
+	}
+	
+	method facing(){
+		return ( ((self.verificarRango(-1,0)) &&(self.direccion()=="D"))|| ((self.verificarRango(0,1))&& (self.direccion()=="I")) )
+	} //A lo ultimo verificar si solo se usa una vez.
+	
 	method golpear(){
         game.schedule(0,{self.image("Pegar_"+self.direccion()+".png")})
         game.schedule(300,{self.image("Goku_estatico_"+self.direccion()+".png")})
-        if (((self.position().x())-enemigo.position().x())>=-1 && ((self.position().x())-enemigo.position().x())<=1 ){
+        if (self.facing()){
             enemigo.perderVida()
         }
     }
@@ -133,17 +143,14 @@ object vegeta{
 	
 	var property image = "Goku_estatico_I.png"
 	var property vida = 5
-	var property position = game.at(16,0)
+	var property position = game.at(8,0)
 	
-	method desplazarse(orientacion){
-		orientacion.moverse(self)
-	}
-	
+		
 	method mover(direc){
         if (direc.x() != 0){
             direccion = direc.texto()
             self.position(self.position().right(direc.x()))
-            self.image("Gokuestatico"+direc.texto()+".png")
+            self.image("Goku_estatico_"+direc.texto()+".png")
             self.direccion(direc.texto())
         }
 
@@ -152,7 +159,7 @@ object vegeta{
                 self.position(self.position().up(direc.y()))
                 game.schedule(0,{self.image("Goku_" +direc.texto()+ self.direccion() + ".png")})
                 game.schedule(400,{self.position(self.position().down(2))})
-                game.schedule(400,{self.image("Gokuestatico" + self.direccion() + ".png")})
+                game.schedule(400,{self.image("Goku_estatico_" + self.direccion() + ".png")})
             }
         }
        }
