@@ -8,14 +8,15 @@ object pantalla{
 		self.configuracionDelTablero()
 		self.visualesEnPantalla()
 		self.programarTeclas()
+		hud.iniciar()
 	}
 	
 	
 	
 	method configuracionDelTablero(){
 		game.width(18)
-		game.height(12)
-		game.cellSize(52)
+		game.height(10)
+		game.cellSize(60)
 		game.title("Dragon Ball Fighter")
 		game.boardGround("color gris.png")
 	}
@@ -23,8 +24,6 @@ object pantalla{
 	method visualesEnPantalla(){
 		game.addVisual(goku)
 		game.addVisual(vegeta)
-		game.addVisual(hud1)
-		game.addVisual(hud2)
 	}
 	
 	method programarTeclas(){
@@ -35,6 +34,7 @@ object pantalla{
         keyboard.right().onPressDo{vegeta.mover(der)}
         keyboard.left().onPressDo{vegeta.mover(izq)}
         keyboard.up().onPressDo{vegeta.mover(arriba)}
+        keyboard.s().onPressDo{goku.perderVida()}
     }
 	
 }
@@ -49,21 +49,7 @@ object finalizarPartida{
 	}
 }
 
-object hud1 {
-    var property image = "barraDeVida/HUD2.png"
-    method position() = game.at(1,10)
-   // method actualizar (vida) {
-     //   image = "img/HUD/HUD1-" + vida.min(50) + ".png"
-   // }
-}
 
-object hud2 {
-    var property image = "barraDeVida/HUD2_I.png"
-    method position() = game.at(12,10)
-   // method actualizar (vida) {
-     //   image = "img/HUD/HUD1-" + vida.min(50) + ".png"
-   // }
-}
 
 // Personajes
 
@@ -72,27 +58,16 @@ object goku{
 	var property direccion = "D"
 	
 	var property image = "Goku_estatico_"+self.direccion()+".png"
-	var property vida = 5
+	var property vida = 10
 	var property position = game.at(1,0)
-/* 
-	method desplazarse(orientacion){
-		orientacion.moverse(self)
-	}*/
-/* 	
-	method cambioOrienation(){
-		if(self.position().x() > enemigo.position().x()){
-			self.image("Goku_estatico_izq.png")
-		} else{
-			self.image("Goku_estatico.png")
-		}
-	}*/
+
 	
 	method mover(direc){
         if (direc.x() != 0){
             direccion = direc.texto()
             self.position(self.position().right(direc.x()))
-            self.image("Goku_estatico_"+direc.texto()+".png")
             self.direccion(direc.texto())
+            self.image("Goku_estatico_"+direc.texto()+".png")
         }
 
         if (direc.y() > 0){
@@ -104,17 +79,11 @@ object goku{
             }
         }
        }
-/* 
-	method saltar(){
-		if(position.y() >= 0 && position.y()<=2){
-			arriba.moverse(self)
-			game.schedule(400,{abajo.moverse(self)})
-		}
-	}
-*/	
+
 	method perderVida(){
 		self.vida(self.vida() - 1)
 		game.say(self, "tengo " + vida + " de vida")
+		hud.actualizar(hud1,self.vida())
 		if(self.vida() <= 0){
 			finalizarPartida.gameOver()
 		}
@@ -142,7 +111,7 @@ object vegeta{
 	var property direccion = "I"
 	
 	var property image = "Goku_estatico_I.png"
-	var property vida = 5
+	var property vida = 10
 	var property position = game.at(8,0)
 	
 		
@@ -164,16 +133,11 @@ object vegeta{
         }
        }
 	
-	/*method saltar(){
-		if(position.y() == 0){
-			arriba.moverse(self)
-			game.schedule(400,{abajo.moverse(self)})
-		}
-	}*/
 	
 	method perderVida(){
 		self.vida(self.vida() - 1)
 		game.say(self, "tengo " + vida + " de vida")
+		hud.actualizar(hud2,self.vida())
 		if(self.vida() <= 0){
 			finalizarPartida.gameOver()
 		}
@@ -188,46 +152,45 @@ object vegeta{
 	}
 	
 }
-/* 
-//Movimiento
 
-object derecha{
-	method moverse(personaje){
-		personaje.direccion("D")
-		personaje.image("Goku_estatico_"+personaje.direccion()+".png")
-		personaje.position(personaje.position().right(1))
+object hud {
+	const elementos = [hud1,hud2,hud3,hud4]
+	method position() = game.at(0,11)
+	method iniciar() {
+		elementos.forEach({elemento => game.addVisual(elemento)})
+	}
+	method actualizar(nombre,vida) {
+		nombre.actualizar(vida)
+	}
+	method terminar() {
+		elementos.forEach({elemento => game.removeVisual(elemento)})
 	}
 }
 
-object izquierda{
-	method moverse(personaje){
-		personaje.direccion("I")
-		personaje.image("Goku_estatico_"+personaje.direccion()+".png")
-		personaje.position(personaje.position().left(1))
-	}
+object hud1 {
+	var property image = "img_vida_P1/vida_p1_10.png"
+	method position() = game.at(0,9)
+	method actualizar (vida) {
+		image = "img_vida_P1/vida_p1_" + vida.max(0) +".png"}
 }
 
-object arriba{
-	var property direccion
-	
-	method moverse(personaje){
-		direccion = personaje.image()
-		personaje.position(personaje.position().up(2))
-		game.schedule(0,{personaje.image("Goku_salto_"+personaje.direccion()+".png")})
-	}
+object hud2 {
+    var property image = "img_vida_P2/vida_p2_10.png"
+    method position() = game.at(13,9)
+   	method actualizar (vida) {
+     	image = "img_vida_P2/vida_p2_" + vida.max(0) + ".png"
+   }
 }
 
-object abajo{
-	
-	var direccion
-	method moverse(personaje){
-		direccion = personaje.image()
-		
-		personaje.position(personaje.position().down(2))
-		game.schedule(0,{personaje.image(arriba.direccion())})
-	}
+object hud3 {
+	var property image="img_vida_P1/hud_p1.png"
+	method position()= game.at(0,9)
 }
-*/
+
+object hud4 {
+	var property image="img_vida_P2/hud_p2.png"
+	method position()= game.at(13,9)
+}
 
 class Movimiento {
     const property x
