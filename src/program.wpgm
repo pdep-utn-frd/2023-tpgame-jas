@@ -5,5 +5,4 @@ program abc {
 	
 	pantalla.iniciar()
 	game.start()
-
 }

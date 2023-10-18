@@ -4,12 +4,19 @@ import wollok.game.*
 
 object pantalla{
 	
+	var property lista=["1","2","3","4","5","6","7","8","9"]
+	var property indice = 0
+	
 	method iniciar(){
 		self.configuracionDelTablero()
 		self.visualesEnPantalla()
 		self.programarTeclas()
 		hud.iniciar()
 		spawner.iniciar()
+		goku.iniciar()
+		vegeta.iniciar()
+		game.boardGround("Fondo/transicion1.jpg")
+		
 	}
 	
 	
@@ -35,7 +42,8 @@ object pantalla{
         keyboard.right().onPressDo{vegeta.mover(der)}
         keyboard.left().onPressDo{vegeta.mover(izq)}
         keyboard.up().onPressDo{vegeta.mover(arriba)}
-        keyboard.s().onPressDo{goku.perderVida()}
+        keyboard.down().onPressDo{vegeta.golpear()}
+        keyboard.s().onPressDo{goku.perderVida(1)}
     }
 	
 }
@@ -43,10 +51,11 @@ object pantalla{
 object finalizarPartida{
 	
 	var property position = game.center()
-	var property image = "vida.png"
+	var property text ="¡Game Over!"
 	
 	method gameOver(){
 		game.addVisual(self)
+		game.schedule(10000,{game.stop()})
 	}
 }
 
@@ -55,40 +64,56 @@ object finalizarPartida{
 // Personajes
 
 object goku{
-	var enemigo = vegeta
+	const enemigo = vegeta
 	var property direccion = "D"
 	const property tipo = "jugador"
 	
-	var property image = "Goku_estatico_"+self.direccion()+".png"
+	var property image = "Goku/Goku_estatico_"+self.direccion()+".png"
 	var property vida = 10
+	var property ki = 0
 	var property position = game.at(1,0)
+	var property movementAllowed = true
+
+	method iniciar (){
+		game.whenCollideDo(self,{elemento=> elemento.chocar(self)})
+	}
+	method chocar(param){}
+	
 
 	
 	method mover(direc){
-        if (direc.x() != 0){
+        if (((self.position().x()>0||direc.x()>0)&&(self.position().x()<16||direc.x()<0)) && movementAllowed && direc.x() != 0 ){
             direccion = direc.texto()
             self.position(self.position().right(direc.x()))
             self.direccion(direc.texto())
-            self.image("Goku_estatico_"+direc.texto()+".png")
+            game.schedule(0,{self.image("Goku/Goku_paso_"+direc.texto()+".png")})
+            game.schedule(300,{self.image("Goku/Goku_estatico_"+direc.texto()+".png")})
         }
 
-        if (direc.y() > 0){
+        if (direc.y() > 0 && movementAllowed){
             if(position.y() >= 0 && position.y()<=2){
                 self.position(self.position().up(direc.y()))
-                game.schedule(0,{self.image("Goku_" +direc.texto()+ self.direccion() + ".png")})
+                game.schedule(0,{self.image("Goku/Goku_" +direc.texto()+ self.direccion() + ".png")})
                 game.schedule(400,{self.position(self.position().down(2))})
-                game.schedule(400,{self.image("Goku_estatico_" + self.direccion() + ".png")})
+                game.schedule(400,{self.image("Goku/Goku_estatico_" + self.direccion() + ".png")})
             }
         }
        }
 
-	method perderVida(){
-		self.vida(self.vida() - 1)
+	method perderVida(cant){
+		self.vida((self.vida() - cant).min(10))
 		game.say(self, "tengo " + vida + " de vida")
 		hud.actualizar(hud1,self.vida())
 		if(self.vida() <= 0){
 			finalizarPartida.gameOver()
 		}
+	}
+	
+	method perderKi(cant){
+		self.ki((self.ki() - cant).min(5))
+		game.say(self, "tengo " + ki + " de ki")
+		hud.actualizar(hud1KI,self.ki())
+		
 	}
 	
 	method verificarRango(lI,lS){
@@ -100,45 +125,53 @@ object goku{
 	} //A lo ultimo verificar si solo se usa una vez.
 	
 	method golpear(){
-        game.schedule(0,{self.image("Pegar_"+self.direccion()+".png")})
-        game.schedule(300,{self.image("Goku_estatico_"+self.direccion()+".png")})
+        game.schedule(0,{self.image("Goku/Goku_golpe_"+self.direccion()+".png")})
+        game.schedule(300,{self.image("Goku/Goku_estatico_"+self.direccion()+".png")})
         if (self.facing()){
-            enemigo.perderVida()
+            enemigo.perderVida(1)
         }
     }
 }
 
 object vegeta{
-	var enemigo = goku
+	const enemigo = goku
 	var property direccion = "I"
 	const property tipo = "jugador"
 	
-	var property image = "Goku_estatico_I.png"
+	var property image = "Goku/Goku_estatico_I.png"
 	var property vida = 10
+	var property ki = 0
 	var property position = game.at(8,0)
+	var property movementAllowed = true
 	
-		
+	method iniciar (){
+		game.whenCollideDo(self,{elemento=> elemento.chocar(self)})
+	}
+	
+	method chocar(param){}
+	
 	method mover(direc){
-        if (direc.x() != 0){
+        if (((self.position().x()>0||direc.x()>0)&&(self.position().x()<16||direc.x()<0)) && movementAllowed && direc.x() != 0 ){
             direccion = direc.texto()
             self.position(self.position().right(direc.x()))
-            self.image("Goku_estatico_"+direc.texto()+".png")
             self.direccion(direc.texto())
+            game.schedule(0,{self.image("Goku/Goku_paso_"+direc.texto()+".png")})
+            game.schedule(300,{self.image("Goku/Goku_estatico_"+direc.texto()+".png")})
         }
 
-        if (direc.y() > 0){
+        if (direc.y() > 0 && movementAllowed){
             if(position.y() >= 0 && position.y()<=2){
                 self.position(self.position().up(direc.y()))
-                game.schedule(0,{self.image("Goku_" +direc.texto()+ self.direccion() + ".png")})
+                game.schedule(0,{self.image("Goku/Goku_" +direc.texto()+ self.direccion() + ".png")})
                 game.schedule(400,{self.position(self.position().down(2))})
-                game.schedule(400,{self.image("Goku_estatico_" + self.direccion() + ".png")})
+                game.schedule(400,{self.image("Goku/Goku_estatico_" + self.direccion() + ".png")})
             }
         }
        }
 	
 	
-	method perderVida(){
-		self.vida(self.vida() - 1)
+	method perderVida(cant){
+		self.vida((self.vida() - cant).min(10))
 		game.say(self, "tengo " + vida + " de vida")
 		hud.actualizar(hud2,self.vida())
 		if(self.vida() <= 0){
@@ -146,18 +179,36 @@ object vegeta{
 		}
 	}
 	
+	
+	method perderKi(cant){
+		self.ki((self.ki() - cant).min(5))
+		game.say(self, "tengo " + ki + " de ki")
+		hud.actualizar(hud2KI,self.ki())
+		
+	}
+	
+	method verificarRango(lI,lS){
+		return(self.position().x()-enemigo.position().x()>=lI && self.position().x()-enemigo.position().x()<=lS)
+	}
+	
+	method facing(){
+		return ( ((self.verificarRango(-1,0)) &&(self.direccion()=="D"))|| ((self.verificarRango(0,1))&& (self.direccion()=="I")) )
+	} //A lo ultimo verificar si solo se usa una vez.
+	
 	method golpear(){
-		game.schedule(0,{self.image("dasdas.png")})
-		game.schedule(300,{self.image("Goku_estatico.png")})
-		if ((self.position().x())+1 == enemigo.position()){
-			enemigo.perderVida()
-		}
+        game.schedule(0,{self.image("Goku/Goku_golpe_"+self.direccion()+".png")})
+        game.schedule(300,{self.image("Goku/Goku_estatico_"+self.direccion()+".png")})
+        if (self.facing()){
+            enemigo.perderVida(1)
+        }
 	}
 	
 }
 
+
+
 object hud {
-	const elementos = [hud1,hud2,hud3,hud4]
+	const elementos = [hud1,hud2,hud3,hud4,hud1KI,hud2KI]
 	method position() = game.at(0,11)
 	method iniciar() {
 		elementos.forEach({elemento => game.addVisual(elemento)})
@@ -170,16 +221,33 @@ object hud {
 	}
 }
 
+
 object hud1 {
 	var property image = "img_vida_P1/vida_p1_10.png"
-	method position() = game.at(0,9)
+	method position() = game.at(0,8)
 	method actualizar (vida) {
 		image = "img_vida_P1/vida_p1_" + vida.max(0) +".png"}
 }
 
+object hud1KI {
+	var property image= "img_vida_P1/hud_ki_p1_0.png"
+	method position()=game.at(0,8)
+	method actualizar (ki){
+		image= "img_vida_P1/hud_ki_p1_" + ki.max(0) +".png"
+	}
+}
+
+object hud2KI {
+	var property image= "img_vida_P2/hud_ki_p2_0.png"
+	method position()=game.at(13,8)
+	method actualizar (ki){
+		image= "img_vida_P2/hud_ki_p2_" + ki.max(0) +".png"
+	}
+}
+
 object hud2 {
     var property image = "img_vida_P2/vida_p2_10.png"
-    method position() = game.at(13,9)
+    method position() = game.at(13,8)
    	method actualizar (vida) {
      	image = "img_vida_P2/vida_p2_" + vida.max(0) + ".png"
    }
@@ -187,12 +255,12 @@ object hud2 {
 
 object hud3 {
 	var property image="img_vida_P1/hud_p1.png"
-	method position()= game.at(0,9)
+	method position()= game.at(0,8)
 }
 
 object hud4 {
 	var property image="img_vida_P2/hud_p2.png"
-	method position()= game.at(13,9)
+	method position()= game.at(13,8)
 }
 
 class Movimiento {
@@ -205,43 +273,79 @@ const arriba = new Movimiento (x = 0, y = 2, texto = "salto_")
 const der = new Movimiento (x = 1, y = 0, texto = "D")
 const izq = new Movimiento (x = -1, y = 0, texto = "I")
 
+
+object spawner {
+    var property lista_spawneables = ["Semilla","Semilla","Orbe","Orbe","Roca"]
+    var property velocidadSpawn = 6000
+
+    method iniciar() {
+        game.onTick(velocidadSpawn,"spawner",{self.spawn()})
+    }
+    
+    method spawn(){
+    	const nuevaMejora = lista_spawneables.anyOne()
+    	if (nuevaMejora == "Semilla"){
+    		var newPowerUp = new Semilla(downSpeed=300)
+    		newPowerUp.spawn()
+    	}
+    	else if (nuevaMejora == "Orbe") {
+    		var newPowerUp = new Orbe(downSpeed=300)
+    		newPowerUp.spawn()
+    	}
+    	else {
+    		const piedras=[new Piedra(downSpeed=100),new Piedra(downSpeed=100),new Piedra(downSpeed=100),new Piedra(downSpeed=100)]
+    		piedras.forEach({piedrita=>piedrita.spawn()})
+    		piedras.clear()
+    	}
+    }
+}
+
 class Mejoras{
 	var property image = ""
 	var property position = game.at(-1,-1)
 	const lista = new Range(start=0, end = 18)
+	const property tipo = "powerUp"
+	var property downSpeed
 		
-	
-	/*method chocar(entidad){
-		if(entidad.tipo()=="jugador"){
-			game.onCollideDo(entidad,{self.buff(entidad)})
-			self.buff(self)
-			game.removeVisual(self)
-		}
-	}*/
-	
-	
-	method buff(mejora){}
+	method buff(elemento){}
 	
 	method spawn(){
 		game.addVisual(self)
 		position = game.at(lista.anyOne(),10)
-		game.onTick(200,"dismibuir posicion Y en 1",{self.position().y() - 1})
+		game.onTick(downSpeed,"dismibuir posicion Y en 1",{self.position(self.position().down(1))})
+	}
+	
+	method chocar(elemento){
+		game.removeVisual(self)
+		self.buff(elemento)
 	}
 }
 
-object spawner {
-    var property lista_spawneables = [semilla = new Mejoras()]
-    const property velocidadSpawn = 2
-
-    method iniciar() {
-        game.onTick(velocidadSpawn,"spawner",{lista_spawneables.anyOne().spawn()})
-    }
+class Semilla inherits Mejoras{
+	
+	override method image() = "powerUps/mejora_semilla.png"
+	override method buff(elemento) {
+		elemento.perderVida(-2)
+	}
+	
 }
 
-object semilla inherits Mejoras{
-	
-	override method image() = "semilla.png"
-	
+class Orbe inherits Mejoras{
+	override method image() = "powerUps/elemento_orbe.png"
+	override method buff(elemento){
+		elemento.perderKi(-1)
+	}
+}
+
+class Piedra inherits Mejoras{
+	override method image()="powerUps/roca.png"
+	override method buff(elemento){
+		var oldImage = elemento.image()
+		elemento.movementAllowed(false)
+		elemento.image("Goku/Goku_estatico_piedra_D.png")
+		game.schedule(2000,{elemento.image(oldImage)})
+		game.schedule(2000,{elemento.movementAllowed(true)})
+	}
 }
 
 
