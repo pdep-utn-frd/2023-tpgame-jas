@@ -9,6 +9,7 @@ object pantalla{
 		self.visualesEnPantalla()
 		self.programarTeclas()
 		hud.iniciar()
+		spawner.iniciar()
 	}
 	
 	
@@ -56,6 +57,7 @@ object finalizarPartida{
 object goku{
 	var enemigo = vegeta
 	var property direccion = "D"
+	const property tipo = "jugador"
 	
 	var property image = "Goku_estatico_"+self.direccion()+".png"
 	var property vida = 10
@@ -109,6 +111,7 @@ object goku{
 object vegeta{
 	var enemigo = goku
 	var property direccion = "I"
+	const property tipo = "jugador"
 	
 	var property image = "Goku_estatico_I.png"
 	var property vida = 10
@@ -201,5 +204,45 @@ class Movimiento {
 const arriba = new Movimiento (x = 0, y = 2, texto = "salto_")
 const der = new Movimiento (x = 1, y = 0, texto = "D")
 const izq = new Movimiento (x = -1, y = 0, texto = "I")
+
+class Mejoras{
+	var property image = ""
+	var property position = game.at(-1,-1)
+	const lista = new Range(start=0, end = 18)
+		
+	
+	/*method chocar(entidad){
+		if(entidad.tipo()=="jugador"){
+			game.onCollideDo(entidad,{self.buff(entidad)})
+			self.buff(self)
+			game.removeVisual(self)
+		}
+	}*/
+	
+	
+	method buff(mejora){}
+	
+	method spawn(){
+		game.addVisual(self)
+		position = game.at(lista.anyOne(),10)
+		game.onTick(200,"dismibuir posicion Y en 1",{self.position().y() - 1})
+	}
+}
+
+object spawner {
+    var property lista_spawneables = [semilla = new Mejoras()]
+    const property velocidadSpawn = 2
+
+    method iniciar() {
+        game.onTick(velocidadSpawn,"spawner",{lista_spawneables.anyOne().spawn()})
+    }
+}
+
+object semilla inherits Mejoras{
+	
+	override method image() = "semilla.png"
+	
+}
+
 
 // Objetos
