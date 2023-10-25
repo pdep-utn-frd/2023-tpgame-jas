@@ -38,12 +38,13 @@ object pantalla{
         keyboard.d().onPressDo{goku.mover(der)}
         keyboard.a().onPressDo{goku.mover(izq)}
         keyboard.w().onPressDo{goku.mover(arriba)}
-        keyboard.f().onPressDo{goku.golpear()}
+        keyboard.s().onPressDo{goku.golpear()}
         keyboard.right().onPressDo{vegeta.mover(der)}
         keyboard.left().onPressDo{vegeta.mover(izq)}
         keyboard.up().onPressDo{vegeta.mover(arriba)}
         keyboard.down().onPressDo{vegeta.golpear()}
-        keyboard.s().onPressDo{goku.perderVida(1)}
+        keyboard.shift().onPressDo{vegeta.ataqueEspecial()}
+        keyboard.r().onPressDo{goku.ataqueEspecial()}
     }
 	
 }
@@ -65,6 +66,7 @@ object finalizarPartida{
 
 object goku{
 	const enemigo = vegeta
+	const property nombre= "Goku"
 	var property direccion = "D"
 	const property tipo = "jugador"
 	
@@ -99,6 +101,24 @@ object goku{
             }
         }
        }
+    method ataqueEspecial(){
+    	var habilidad
+    	if (ki>=3 && movementAllowed){
+    		ki-=3
+    		game.schedule(0,{self.image("Goku/Goku_ataque_1_"+self.direccion()+".png")})
+    		game.schedule(400,{self.image("Goku/Goku_ataque_2_"+self.direccion()+".png")})
+    		game.schedule(600,{self.image("Goku/Goku_ataque_2.1_"+self.direccion()+".png")})
+    		game.schedule(1200,{self.image("Goku/Goku_estatico_"+self.direccion()+".png")})
+    		if (direccion=="D"){
+    			habilidad = new KameHameHa(image="kamehameha/kamehameha_2_"+self.direccion()+".png")
+    			game.schedule(500,{habilidad.cast(der)})
+    		}
+    		else{
+    			habilidad = new KameHameHa(image="kamehameha/kamehameha_2_"+self.direccion()+".png")
+    			game.schedule(500,{habilidad.cast(izq)})
+    		}
+    	}
+    }
 
 	method perderVida(cant){
 		self.vida((self.vida() - cant).min(10))
@@ -137,10 +157,11 @@ object vegeta{
 	const enemigo = goku
 	var property direccion = "I"
 	const property tipo = "jugador"
+	const property nombre= "Vegeta"
 	
-	var property image = "Goku/Goku_estatico_I.png"
+	var property image = "Vegeta/Vegeta_estatico_I.png"
 	var property vida = 10
-	var property ki = 0
+	var property ki = 5
 	var property position = game.at(8,0)
 	var property movementAllowed = true
 	
@@ -155,20 +176,37 @@ object vegeta{
             direccion = direc.texto()
             self.position(self.position().right(direc.x()))
             self.direccion(direc.texto())
-            game.schedule(0,{self.image("Goku/Goku_paso_"+direc.texto()+".png")})
-            game.schedule(300,{self.image("Goku/Goku_estatico_"+direc.texto()+".png")})
+            game.schedule(0,{self.image("Vegeta/Vegeta_paso_"+direc.texto()+".png")})
+            game.schedule(300,{self.image("Vegeta/Vegeta_estatico_"+direc.texto()+".png")})
         }
 
         if (direc.y() > 0 && movementAllowed){
             if(position.y() >= 0 && position.y()<=2){
                 self.position(self.position().up(direc.y()))
-                game.schedule(0,{self.image("Goku/Goku_" +direc.texto()+ self.direccion() + ".png")})
+                game.schedule(0,{self.image("Vegeta/Vegeta_" +direc.texto()+ self.direccion() + ".png")})
                 game.schedule(400,{self.position(self.position().down(2))})
-                game.schedule(400,{self.image("Goku/Goku_estatico_" + self.direccion() + ".png")})
+                game.schedule(400,{self.image("Vegeta/Vegeta_estatico_" + self.direccion() + ".png")})
             }
         }
        }
 	
+	method ataqueEspecial(){
+		if (ki>=0 && movementAllowed){
+			//ki-=3
+			game.schedule(0,{self.image("Vegeta/Vegeta_tp_"+self.direccion()+".png")})
+			if ((enemigo.direccion()=="D") && (enemigo.position().x().between(2,17))){
+				game.schedule(500,{self.position(enemigo.position().left(1))})
+			}
+			else if((enemigo.direccion()=="I") && (enemigo.position().x().between(1,17))){
+				game.schedule(500,{self.position(enemigo.position().right(1))})
+			}
+			else{
+				game.schedule(500,{self.position(enemigo.position())})
+			}
+			game.schedule(800,{self.image("Vegeta/Vegeta_tp_"+enemigo.direccion()+".png")})
+			game.schedule(1000,{self.image("Vegeta/Vegeta_estatico_"+enemigo.direccion()+".png")})
+		}
+	}
 	
 	method perderVida(cant){
 		self.vida((self.vida() - cant).min(10))
@@ -196,8 +234,8 @@ object vegeta{
 	} //A lo ultimo verificar si solo se usa una vez.
 	
 	method golpear(){
-        game.schedule(0,{self.image("Goku/Goku_golpe_"+self.direccion()+".png")})
-        game.schedule(300,{self.image("Goku/Goku_estatico_"+self.direccion()+".png")})
+        game.schedule(0,{self.image("Vegeta/Vegeta_golpe_"+self.direccion()+".png")})
+        game.schedule(300,{self.image("Vegeta/Vegeta_estatico_"+self.direccion()+".png")})
         if (self.facing()){
             enemigo.perderVida(1)
         }
@@ -312,7 +350,7 @@ class Mejoras{
 	method spawn(){
 		game.addVisual(self)
 		position = game.at(lista.anyOne(),10)
-		game.onTick(downSpeed,"dismibuir posicion Y en 1",{self.position(self.position().down(1))})
+		game.onTick(downSpeed,"disminuir posicion Y en 1",{self.position(self.position().down(1))})
 	}
 	
 	method chocar(elemento){
@@ -342,11 +380,42 @@ class Piedra inherits Mejoras{
 	override method buff(elemento){
 		var oldImage = elemento.image()
 		elemento.movementAllowed(false)
-		elemento.image("Goku/Goku_estatico_piedra_D.png")
+		elemento.image(elemento.nombre()+"/"+elemento.nombre()+"_estatico_piedra_D.png")
 		game.schedule(2000,{elemento.image(oldImage)})
 		game.schedule(2000,{elemento.movementAllowed(true)})
 	}
 }
 
+class KameHameHa {
+	var property position = game.at(-2,-2)
+	var property image
+	
+	method cast(direccion){
+			position = goku.position().right(direccion.x())
+			game.addVisual(self)
+			game.onTick(120,"kamehameha",{self.avance(direccion)})
+	}
+
+
+	method chocar(personaje){
+		personaje.perderVida(5)
+		game.removeTickEvent("kamehameha")
+		game.removeVisual(self)
+	}
+	
+	
+	method avance(direccion){
+		if (self.position().x().between(-1,19)){
+			game.schedule(0,{self.image("kamehameha/kamehameha_1_"+direccion.texto()+".png")})
+			game.schedule(50,{self.position(self.position().right(direccion.x()))})
+			game.schedule(100,{self.image("kamehameha/kamehameha_2_"+direccion.texto()+".png")})
+		}
+		else{
+			game.removeTickEvent("kamehameha")
+			game.removeVisual(self)
+		}
+	
+	}
+}
 
 // Objetos
