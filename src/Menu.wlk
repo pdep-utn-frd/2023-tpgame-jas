@@ -40,7 +40,10 @@ object fondoMenuControles{
 object fondoJuego {
     method position()=game.at(0,0) 
     method image()="pantallas/Template Background.jpg"
-
+	
+	method chocar(elem){}
+	
+	
     method iniciar(){
         game.clear()
         pantalla.iniciar()

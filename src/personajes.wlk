@@ -36,7 +36,7 @@ class Personaje {
             self.position(self.position().right(direc.x()))
             self.direccion(direc.texto())
             game.schedule(0,{self.image(""+nombre+"/"+nombre+"_paso_"+direc.texto()+".png")})
-            game.schedule(300,{self.image(""+nombre+"/"+nombre+"_estatico_"+direc.texto()+".png")})
+            game.schedule(250,{self.image(""+nombre+"/"+nombre+"_estatico_"+direc.texto()+".png")})
         }
 
         if (direc.y() > 0 && movementAllowed){
@@ -139,6 +139,7 @@ object goku inherits Personaje(enemigo=vegeta, nombre="Goku", direccion="D", ima
 		position=game.at(1,0)
 		movementAllowed= true
 		ki=2
+		nombre="Goku"
 	}
 	
 	
@@ -224,6 +225,7 @@ object vegeta inherits Personaje (enemigo=goku, nombre="Vegeta", direccion="I", 
 		position=game.at(16,0)
 		movementAllowed= true
 		ki=2
+		nombre="Vegeta"
 	}
 
 }

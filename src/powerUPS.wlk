@@ -44,7 +44,7 @@ object spawner {
 class Mejoras{
 	var property image = ""
 	var property position = game.at(-2,-2)
-	const lista = new Range(start=0, end = 18)
+	const lista = new Range(start=3, end = 15)
 	const property tipo = "powerUp"
 	var property downSpeed
 		
@@ -99,7 +99,7 @@ class Piedra inherits Mejoras{
 	override method buff(elemento){
 		var oldImage = elemento.image()
 		elemento.movementAllowed(false)
-		game.schedule(100,{elemento.image(elemento.nombre()+"/"+elemento.nombre()+"_estatico_piedra_"+elemento.direccion()+".png")})
+		game.schedule(300,{elemento.image(elemento.nombre()+"/"+elemento.nombre()+"_estatico_piedra_"+elemento.direccion()+".png")})
 		game.schedule(2000,{elemento.image(oldImage)})
 		game.schedule(2000,{elemento.movementAllowed(true)})
 	}
