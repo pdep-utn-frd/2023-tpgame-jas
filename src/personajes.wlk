@@ -12,7 +12,10 @@ import Menu.*
 class Personaje {
 	const property enemigo 
 	var property nombre 
-	var property direccion 
+	var property direccion
+	var property hudVida
+	var property hudKi
+	const property nombreInicial
 	
 	var property image 
 	var property vida = 10
@@ -51,17 +54,38 @@ class Personaje {
 	    
 	method reset(){}
 	
-	method ssj(){} 
+	method ssj(){
+    	if (ki>=3 && movementAllowed){
+    		self.perderKi(3)
+    		danio = 2
+    		nombre = nombre+"SSJ"
+    		image = nombre+"/"+nombre+"_estatico_"+self.direccion()+".png"
+    		game.schedule(10000,{danio=1})
+    		game.schedule(10000,{nombre=nombreInicial})}
+    }
     
     
-    method ataqueEspecial(){}
+    method ataqueEspecial()
     
     
- 	method perderVida(cant){}
+    method perderVida(cant){
+		self.vida((self.vida() - cant).min(10))
+		game.say(self, "tengo " + vida + " de vida")
+		hud.actualizar(hudVida,self.vida())
+		if(self.vida() <= 0){
+			finDelJuego.gameOver()
+		}
+	}
 	
-	
-	method perderKi(cant){}	   
 
+	
+	
+	method perderKi(cant){
+		self.ki((self.ki() - cant).min(5))
+		game.say(self, "tengo " + ki + " de ki")
+		hud.actualizar(hudKi,self.ki())
+		
+	}
 
 	method verificarRango(lI,lS){
 		return(self.position().x()-enemigo.position().x()>=lI && self.position().x()-enemigo.position().x()<=lS)
@@ -92,7 +116,7 @@ class Personaje {
 //███████████████████████████████████████████████████████████████████████████████
 
 
-object goku inherits Personaje(enemigo=vegeta, nombre="Goku", direccion="D", image="Goku/Goku_estatico_D.png", position=game.at(1,0)){
+object goku inherits Personaje(nombreInicial="Goku",hudVida=hud1, hudKi=hud1KI, enemigo=vegeta, nombre="Goku", direccion="D", image="Goku/Goku_estatico_D.png", position=game.at(1,0)){
 	
 	
 	override method ataqueEspecial(){
@@ -115,22 +139,6 @@ object goku inherits Personaje(enemigo=vegeta, nombre="Goku", direccion="D", ima
     }
     
     
-    override method perderVida(cant){
-		self.vida((self.vida() - cant).min(10))
-		game.say(self, "tengo " + vida + " de vida")
-		hud.actualizar(hud1,self.vida())
-		if(self.vida() <= 0){
-			finDelJuego.gameOver()
-		}
-	}
-	
-	
-	override method perderKi(cant){
-		self.ki((self.ki() - cant).min(5))
-		game.say(self, "tengo " + ki + " de ki")
-		hud.actualizar(hud1KI,self.ki())
-		
-	}
 	
 	override method reset(){
 		vida=10
@@ -141,18 +149,6 @@ object goku inherits Personaje(enemigo=vegeta, nombre="Goku", direccion="D", ima
 		ki=2
 		nombre="Goku"
 	}
-	
-	
-	override method ssj(){
-    	if (ki>=3 && movementAllowed){
-    		self.perderKi(3)
-    		danio = 2
-    		nombre = nombre+"SSJ"
-    		image = nombre+"/"+nombre+"_estatico_"+self.direccion()+".png"
-    		game.schedule(10000,{danio=1})
-    		game.schedule(10000,{nombre="Goku"})
-    	}
-    }
 	}
    
     
@@ -165,7 +161,7 @@ object goku inherits Personaje(enemigo=vegeta, nombre="Goku", direccion="D", ima
 //███████████████████████████████████████████████████████████████████████████████
 
 
-object vegeta inherits Personaje (enemigo=goku, nombre="Vegeta", direccion="I", image="Vegeta/Vegeta_estatico_I.png", position=game.at(16,0)){
+object vegeta inherits Personaje (nombreInicial="Vegeta",hudVida=hud2, hudKi=hud2KI,enemigo=goku, nombre="Vegeta", direccion="I", image="Vegeta/Vegeta_estatico_I.png", position=game.at(16,0)){
 	
 	
 	override 	method ataqueEspecial(){
@@ -187,26 +183,9 @@ object vegeta inherits Personaje (enemigo=goku, nombre="Vegeta", direccion="I", 
 		}
 	}
 	
+
 	
-    override method perderVida(cant){
-		self.vida((self.vida() - cant).min(10))
-		game.say(self, "tengo " + vida + " de vida")
-		hud.actualizar(hud2,self.vida())
-		if(self.vida() <= 0){
-			finDelJuego.gameOver()
-		}
-	}
-	
-	
-	override method perderKi(cant){
-		self.ki((self.ki() - cant).min(5))
-		game.say(self, "tengo " + ki + " de ki")
-		hud.actualizar(hud2KI,self.ki())
-		
-	}
-	
-	
-	override method ssj(){
+	/*override method ssj(){
     	if (ki>=3 && movementAllowed){
     		self.perderKi(3)
     		danio = 2
@@ -215,7 +194,7 @@ object vegeta inherits Personaje (enemigo=goku, nombre="Vegeta", direccion="I", 
     		game.schedule(10000,{danio=1})
     		game.schedule(10000,{nombre="Vegeta"})
     	}
-    }
+    }*/
     
     
     override method reset(){

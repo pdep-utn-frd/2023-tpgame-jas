@@ -119,7 +119,7 @@ class KameHameHa {
 	method cast(direccion){
 			position = goku.position().right(direccion.x())
 			game.addVisual(self)
-			game.onTick(120,"kamehameha",{self.avance(direccion)})
+			game.onTick(220,"kamehameha",{self.avance(direccion)})
 	}
 
 

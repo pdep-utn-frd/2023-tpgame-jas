@@ -3,7 +3,7 @@ import DragonBallFighter.*
 import Menu.*
 
 
-program abc {
+program dbzfighter {
 	
 	menuInicio.configuracion()
 	game.start()
