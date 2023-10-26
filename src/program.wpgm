@@ -1,6 +1,7 @@
 import wollok.game.*
 import DragonBallFighter.*
 
+
 program abc {
 	
 	pantalla.iniciar()
