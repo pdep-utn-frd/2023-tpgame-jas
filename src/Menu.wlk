@@ -68,7 +68,7 @@ object finDelJuego{
         game.addVisual(self)
         goku.movementAllowed(false)
         vegeta.movementAllowed(false)
-        game.schedule(10000,{game.stop()})
+        game.removeTickEvent("spawner")
         keyboard.j().onPressDo{fondoJuego.reset()}
         keyboard.q().onPressDo{game.stop()}
     }
