@@ -10,7 +10,7 @@ import personajes.*
 
 
 object spawner {
-    var property lista_spawneables = ["Semilla","Semilla","Orbe","Orbe","Roca"]
+    var property lista_spawneables = ["Semilla","Semilla","Orbe","Orbe","Roca","Roca","Roca"]
     var property velocidadSpawn = 6000
 
 
@@ -30,9 +30,8 @@ object spawner {
     		newPowerUp.spawn()
     	}
     	else {
-    		const piedras=[new Piedra(downSpeed=100, image="powerUps/roca.png"),new Piedra(downSpeed=100, image="powerUps/roca.png"),new Piedra(downSpeed=100,image="powerUps/roca.png")]
-    		piedras.forEach({piedrita=>piedrita.spawn()})
-    		piedras.clear()
+    		var newPowerUp = new Piedra(downSpeed=100, image="powerUps/roca.png")
+    		newPowerUp.spawn() 
     	}
     }
 }
@@ -70,7 +69,7 @@ class Mejoras{
 	
 	method chocar(elemento){
 		self.buff(elemento)
-		//game.removeTickEvent("disminuir posicion Y en 1")
+		game.removeTickEvent("disminuir posicion Y en 1")
 		game.removeVisual(self)
 	}
 }
@@ -87,7 +86,7 @@ class Semilla inherits Mejoras{
 class Orbe inherits Mejoras{
 	
 	override method buff(elemento){
-		elemento.perderKi(-1)
+		elemento.perderKi(-3)
 	}
 }
 
@@ -100,7 +99,7 @@ class Piedra inherits Mejoras{
 	override method buff(elemento){
 		var oldImage = elemento.image()
 		elemento.movementAllowed(false)
-		elemento.image(elemento.nombre()+"/"+elemento.nombre()+"_estatico_piedra_D.png")
+		game.schedule(100,{elemento.image(elemento.nombre()+"/"+elemento.nombre()+"_estatico_piedra_"+elemento.direccion()+".png")})
 		game.schedule(2000,{elemento.image(oldImage)})
 		game.schedule(2000,{elemento.movementAllowed(true)})
 	}

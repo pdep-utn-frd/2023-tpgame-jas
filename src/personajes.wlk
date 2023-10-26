@@ -2,6 +2,7 @@ import wollok.game.*
 import DragonBallFighter.*
 import huds.*
 import powerUPS.*
+import Menu.*
 
 
 //███████████████████████████████████████████████████████████████████████████████
@@ -48,15 +49,9 @@ class Personaje {
         }
     }
 	    
-	/*method ssj(){
-    	if (ki>=3 && movementAllowed){
-    		danio = 2
-    		nombre = nombre+"_SSJ"
-    		image = nombre+"/"+nombre+"_estatico_"+self.direccion()+".png"
-    		game.schedule(10000,{danio=1})
-    		game.schedule(10000,{nombre="Goku"})
-    	}
-    } */
+	method reset(){}
+	
+	method ssj(){} 
     
     
     method ataqueEspecial(){}
@@ -79,14 +74,16 @@ class Personaje {
 	
 	
 	method golpear(){
-        game.schedule(0,{self.image(""+nombre+"/"+nombre+"_golpe_"+self.direccion()+".png")})
-        game.schedule(300,{self.image(""+nombre+"/"+nombre+"_estatico_"+self.direccion()+".png")})
-        if (self.facing()){
-            enemigo.perderVida(danio)
+		if(movementAllowed){
+			game.schedule(0,{self.image(""+nombre+"/"+nombre+"_golpe_"+self.direccion()+".png")})
+        	game.schedule(300,{self.image(""+nombre+"/"+nombre+"_estatico_"+self.direccion()+".png")})
+        	if (self.facing()){
+            	enemigo.perderVida(danio)
         }
+
     } 
     
-    
+ }  
 }
 
 
@@ -100,12 +97,12 @@ object goku inherits Personaje(enemigo=vegeta, nombre="Goku", direccion="D", ima
 	
 	override method ataqueEspecial(){
     	var habilidad
-    	if (ki>=3 && movementAllowed){
-    		self.perderKi(3)
-    		game.schedule(0,{self.image("Goku/"+nombre+"_ataque_1_"+self.direccion()+".png")})
-    		game.schedule(400,{self.image("Goku/"+nombre+"_ataque_2_"+self.direccion()+".png")})
-    		game.schedule(600,{self.image("Goku/"+nombre+"_ataque_2.1_"+self.direccion()+".png")})
-    		game.schedule(1200,{self.image("Goku/"+nombre+"_estatico_"+self.direccion()+".png")})
+    	if (ki>=2 && movementAllowed){
+    		self.perderKi(2)
+    		game.schedule(0,{self.image(nombre+"/"+nombre+"_ataque_1_"+self.direccion()+".png")})
+    		game.schedule(400,{self.image(nombre+"/"+nombre+"_ataque_2_"+self.direccion()+".png")})
+    		game.schedule(600,{self.image(nombre+"/"+nombre+"_ataque_2.1_"+self.direccion()+".png")})
+    		game.schedule(1200,{self.image(nombre+"/"+nombre+"_estatico_"+self.direccion()+".png")})
     		if (direccion=="D"){
     			habilidad = new KameHameHa(image="kamehameha/kamehameha_2_"+self.direccion()+".png")
     			game.schedule(500,{habilidad.cast(der)})
@@ -123,7 +120,7 @@ object goku inherits Personaje(enemigo=vegeta, nombre="Goku", direccion="D", ima
 		game.say(self, "tengo " + vida + " de vida")
 		hud.actualizar(hud1,self.vida())
 		if(self.vida() <= 0){
-			finalizarPartida.gameOver()
+			finDelJuego.gameOver()
 		}
 	}
 	
@@ -134,10 +131,32 @@ object goku inherits Personaje(enemigo=vegeta, nombre="Goku", direccion="D", ima
 		hud.actualizar(hud1KI,self.ki())
 		
 	}
-    
+	
+	override method reset(){
+		vida=10
+		image="Goku/Goku_estatico_D.png"
+		danio=1
+		position=game.at(1,0)
+		movementAllowed= true
+		ki=2
+	}
+	
+	
+	override method ssj(){
+    	if (ki>=3 && movementAllowed){
+    		self.perderKi(3)
+    		danio = 2
+    		nombre = nombre+"SSJ"
+    		image = nombre+"/"+nombre+"_estatico_"+self.direccion()+".png"
+    		game.schedule(10000,{danio=1})
+    		game.schedule(10000,{nombre="Goku"})
+    	}
+    }
+	}
+   
     
 
-}
+
 
 
 //███████████████████████████████████████████████████████████████████████████████
@@ -149,9 +168,9 @@ object vegeta inherits Personaje (enemigo=goku, nombre="Vegeta", direccion="I", 
 	
 	
 	override 	method ataqueEspecial(){
-		if (ki>=3 && movementAllowed){
-			self.perderKi(3)
-			game.schedule(0,{self.image("Vegeta/"+nombre+"_tp_"+self.direccion()+".png")})
+		if (ki>=2 && movementAllowed){
+			self.perderKi(2)
+			game.schedule(0,{self.image(nombre+"/"+nombre+"_tp_"+self.direccion()+".png")})
 			if ((enemigo.direccion()=="D") && (enemigo.position().x().between(2,17))){
 				game.schedule(500,{self.position(enemigo.position().left(1))})
 			}
@@ -161,8 +180,9 @@ object vegeta inherits Personaje (enemigo=goku, nombre="Vegeta", direccion="I", 
 			else{
 				game.schedule(500,{self.position(enemigo.position())})
 			}
-			game.schedule(800,{self.image("Vegeta/"+nombre+"_tp_"+enemigo.direccion()+".png")})
-			game.schedule(1000,{self.image("Vegeta/"+nombre+"_estatico_"+enemigo.direccion()+".png")})
+			self.direccion(enemigo.direccion())
+			game.schedule(800,{self.image(nombre+"/"+nombre+"_tp_"+enemigo.direccion()+".png")})
+			game.schedule(1000,{self.image(nombre+"/"+nombre+"_estatico_"+enemigo.direccion()+".png")})
 		}
 	}
 	
@@ -172,7 +192,7 @@ object vegeta inherits Personaje (enemigo=goku, nombre="Vegeta", direccion="I", 
 		game.say(self, "tengo " + vida + " de vida")
 		hud.actualizar(hud2,self.vida())
 		if(self.vida() <= 0){
-			finalizarPartida.gameOver()
+			finDelJuego.gameOver()
 		}
 	}
 	
@@ -182,6 +202,28 @@ object vegeta inherits Personaje (enemigo=goku, nombre="Vegeta", direccion="I", 
 		game.say(self, "tengo " + ki + " de ki")
 		hud.actualizar(hud2KI,self.ki())
 		
+	}
+	
+	
+	override method ssj(){
+    	if (ki>=3 && movementAllowed){
+    		self.perderKi(3)
+    		danio = 2
+    		nombre = nombre +"SSJ"
+    		image = nombre+"/"+nombre+"_estatico_"+self.direccion()+".png"
+    		game.schedule(10000,{danio=1})
+    		game.schedule(10000,{nombre="Vegeta"})
+    	}
+    }
+    
+    
+    override method reset(){
+		vida=10
+		image="Vegeta/Vegeta_estatico_I.png"
+		danio=1
+		position=game.at(16,0)
+		movementAllowed= true
+		ki=2
 	}
 
 }

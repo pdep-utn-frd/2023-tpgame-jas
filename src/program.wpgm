@@ -1,9 +1,10 @@
 import wollok.game.*
 import DragonBallFighter.*
+import Menu.*
 
 
 program abc {
 	
-	pantalla.iniciar()
+	menuInicio.configuracion()
 	game.start()
 }

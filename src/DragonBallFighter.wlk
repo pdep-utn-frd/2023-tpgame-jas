@@ -2,6 +2,7 @@ import wollok.game.*
 import personajes.*
 import huds.*
 import powerUPS.*
+import Menu.*
 
 //███████████████████████████████████████████████████████████████████████████████
 //▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒CONFIGURACIÓN INICIAL▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
@@ -18,7 +19,7 @@ object pantalla{
 		goku.iniciar()
 		vegeta.iniciar()
 		hud.iniciar()
-		game.boardGround("Fondo/transicion1.jpg")
+		//game.boardGround("Fondo/transicion1.jpg")
 		
 	}
 	
@@ -28,11 +29,12 @@ object pantalla{
 		game.height(10)
 		game.cellSize(60)
 		game.title("Dragon Ball Fighter")
-		game.boardGround("color gris.png")
+		//game.boardGround("color gris.png")
 	}
 	
 	
 	method visualesEnPantalla(){
+		game.addVisual(fondoJuego)
 		game.addVisual(goku)
 		game.addVisual(vegeta)
 	}
@@ -49,12 +51,14 @@ object pantalla{
         keyboard.down().onPressDo{vegeta.golpear()}
         keyboard.shift().onPressDo{vegeta.ataqueEspecial()}
         keyboard.r().onPressDo{goku.ataqueEspecial()}
+        keyboard.e().onPressDo{goku.ssj()}
+        keyboard.enter().onPressDo{vegeta.ssj()}
     }
 	
 }
 
 
-object finalizarPartida{
+/*object finalizarPartida{
 	
 	var property position = game.center()
 	var property text ="¡Game Over!"
@@ -64,7 +68,7 @@ object finalizarPartida{
 		game.addVisual(self)
 		game.schedule(10000,{game.stop()})
 	}
-}
+}*/
 
 
 
