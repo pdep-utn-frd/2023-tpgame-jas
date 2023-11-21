@@ -93,7 +93,7 @@ class Personaje {
 	
 	
 	method facing(){
-		return ( ((self.verificarRango(-1,0)) &&(self.direccion()=="D"))|| ((self.verificarRango(0,1))&& (self.direccion()=="I")) )
+		return ( ((self.verificarRango(-1,0)) &&(self.direccion()=="D")&& (enemigo.position().y()==self.position().y()))|| ((self.verificarRango(0,1))&& (self.direccion()=="I")&& (enemigo.position().y()==self.position().y())))
 	}
 	
 	
